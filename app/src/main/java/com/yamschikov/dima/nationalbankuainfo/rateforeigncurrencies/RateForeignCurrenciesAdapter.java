@@ -1,15 +1,19 @@
 package com.yamschikov.dima.nationalbankuainfo.rateforeigncurrencies;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yamschikov.dima.nationalbankuainfo.R;
 
 import java.util.List;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,6 +47,11 @@ public class RateForeignCurrenciesAdapter extends RecyclerView.Adapter<RateForei
         holder.mRateCurrency.setText(Double.toString(rateForeignCurrencies.getRate()));
         holder.mDateCurrency.setText(rateForeignCurrencies.getExchangedate());
 
+        Random rnd = new Random();
+        int randomColor = Color.argb(255, rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255));
+
+        holder.mImageViewCurrency.setColorFilter(randomColor);
+
     }
 
     @Override
@@ -56,6 +65,7 @@ public class RateForeignCurrenciesAdapter extends RecyclerView.Adapter<RateForei
         @BindView(R.id.name_currency) TextView mNameCurrency;
         @BindView(R.id.rate_currency) TextView mRateCurrency;
         @BindView(R.id.date_currency) TextView mDateCurrency;
+        @BindView(R.id.image_view_currency) ImageView mImageViewCurrency;
 
 
         public RateForeignCurrenciesHolder(View itemView) {

@@ -6,8 +6,8 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_rate_foreigencurrencies"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Офіційний курс гривні щодо іноземних валют" />
+            android:icon="@drawable/ic_monetization_on_black_24dp"
+            android:title="@string/toolbar_title_rate_fragment"/>
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"

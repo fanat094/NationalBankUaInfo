@@ -1,11 +1,6 @@
 package com.yamschikov.dima.nationalbankuainfo;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -17,52 +12,58 @@ import android.view.MenuItem;
 
 import com.yamschikov.dima.nationalbankuainfo.rateforeigncurrencies.RateForeignCurrenciesFragment;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.nav_view) NavigationView mNavigationView;
+    @BindView(R.id.drawer_layout) DrawerLayout mDrawer;
+    private BaseFragmentManager mBaseFragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ButterKnife.bind(this);
+        setSupportActionBar(mToolbar);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+                this, mDrawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        ShowFragment(R.id.nav_rate_foreigencurrencies);
+        mNavigationView.setNavigationItemSelectedListener(this);
+        mBaseFragmentManager = new BaseFragmentManager();
+        setContent(new RateForeignCurrenciesFragment(), false);
     }
+
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+            removeCurrentFragment();
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -70,37 +71,54 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void ShowFragment(int itemId) {
 
-        Fragment fragment = null;
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        BaseFragment fragment = null;
 
-        switch (itemId) {
+        switch (item.getItemId()) {
             case R.id.nav_rate_foreigencurrencies:
                 fragment = new RateForeignCurrenciesFragment();
                 break;
 
         }
-
-
-        if (fragment != null) {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.frame_layout, fragment);
-            fragmentTransaction.commit();
+        if (!(fragment == null || isAlreadyContains(fragment))) {
+            setContent(fragment);
         }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        mDrawer.closeDrawer(8388611);
+        return true;
     }
 
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public void setCheckedItem(int id) {
 
+        if (this.mNavigationView != null) {
+            this.mNavigationView.setCheckedItem(id);
+        }
+    }
 
-        //Calling the ShowFragment() method here to show the our created menu as default menus.
-        ShowFragment(item.getItemId());
+    public boolean isAlreadyContains(BaseFragment fragment) {
+        return this.mBaseFragmentManager.isAlreadyContains(fragment);
+    }
 
-        return true;
+    public void setContent(BaseFragment fragment) {
+        this.mBaseFragmentManager.setFragment(this, fragment, R.id.frame_layout);
+    }
+
+    public void setContent(BaseFragment fragment, boolean addToBackStack) {
+        this.mBaseFragmentManager.setFragment(this, fragment, R.id.frame_layout, addToBackStack);
+    }
+
+    public boolean removeCurrentFragment() {
+        return this.mBaseFragmentManager.removeCurrentFragment(this);
+    }
+
+    public void setToolbarTitle(String toolbarTitle) {
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(toolbarTitle);
+        }
+
     }
 }

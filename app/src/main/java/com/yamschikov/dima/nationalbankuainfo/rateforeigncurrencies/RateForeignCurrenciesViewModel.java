@@ -27,7 +27,6 @@ public class RateForeignCurrenciesViewModel extends ViewModel {
     }
 
 
-
     MutableLiveData<List<RateForeignCurrencies>> data;
 
     public LiveData<List<RateForeignCurrencies>> getData() {
@@ -43,10 +42,10 @@ public class RateForeignCurrenciesViewModel extends ViewModel {
     private void loadData() {
 
         webService.getRateForeignCurrencies().enqueue(new Callback<List<RateForeignCurrencies>>() {
+
             @Override
             public void onResponse(Call<List<RateForeignCurrencies>> call, Response<List<RateForeignCurrencies>> response) {
 
-               // data.setValue(response.body());
                 KLog.e("data.setValue:", response.body());
 
                 data.setValue(response.body());
@@ -55,6 +54,8 @@ public class RateForeignCurrenciesViewModel extends ViewModel {
 
             @Override
             public void onFailure(Call<List<RateForeignCurrencies>> call, Throwable t) {
+
+                data.setValue(null);
 
             }
         });
