@@ -33,7 +33,6 @@ public class RateForeignCurrenciesViewModel extends ViewModel {
         if (data == null) {
             data = new MutableLiveData<>();
             loadData();
-
             KLog.e("getData", data.getValue());
         }
         return data;
@@ -57,6 +56,40 @@ public class RateForeignCurrenciesViewModel extends ViewModel {
 
                 data.setValue(null);
 
+            }
+        });
+
+    }
+
+    MutableLiveData<List<RateForeignCurrencies>> dataDate;
+
+    public LiveData<List<RateForeignCurrencies>> getDataDate(String datadateparamtoload) {
+
+            dataDate = new MutableLiveData<>();
+            loadDateParam(datadateparamtoload);
+
+        return dataDate;
+    }
+
+    private void loadDateParam(String datadateparam) {
+
+        KLog.e("loadDateParam(String ssssss):", datadateparam);
+
+        webService.getRateForeignCurrenciesParam(datadateparam).enqueue(new Callback<List<RateForeignCurrencies>>() {
+            @Override
+            public void onResponse(Call<List<RateForeignCurrencies>> call, Response<List<RateForeignCurrencies>> response) {
+
+                if (response.body().isEmpty() != true) {
+
+                    KLog.e("getRateForeignCurrenciesParam:", response.body());
+                    dataDate.setValue(response.body());
+                }else dataDate.setValue(null);
+            }
+
+            @Override
+            public void onFailure(Call<List<RateForeignCurrencies>> call, Throwable t) {
+
+                dataDate.setValue(null);
             }
         });
 

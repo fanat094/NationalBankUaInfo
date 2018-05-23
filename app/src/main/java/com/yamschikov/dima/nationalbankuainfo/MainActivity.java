@@ -19,9 +19,12 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 
-    @BindView(R.id.toolbar) Toolbar mToolbar;
-    @BindView(R.id.nav_view) NavigationView mNavigationView;
-    @BindView(R.id.drawer_layout) DrawerLayout mDrawer;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.nav_view)
+    NavigationView mNavigationView;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout mDrawer;
     private BaseFragmentManager mBaseFragmentManager;
 
     @Override
@@ -53,23 +56,11 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+    }*/
 
 
     @SuppressWarnings("StatementWithEmptyBody")

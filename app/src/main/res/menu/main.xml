@@ -2,8 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_filter"
+        android:icon="@drawable/ic_format_line_spacing_black_24dp"
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        app:showAsAction="never" />
+        app:showAsAction="never|always" />
+
+    <item
+        android:id="@+id/action_date"
+        android:icon="@drawable/ic_date_range_black_24dp"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never|always" />
 </menu>

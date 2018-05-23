@@ -7,4 +7,14 @@
     <string name="toolbar_title_rate_fragment">Курс гривні/Іноземні валюти</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+
+
+    <string-array name="filter_items">
+        <item>По алфавіту</item>
+        <item>По ціні (за зростанням)</item>
+        <item>По ціні (за зменшенням)</item>
+    </string-array>
+
+    <string name="action_filter">OK</string>
+
 </resources>
