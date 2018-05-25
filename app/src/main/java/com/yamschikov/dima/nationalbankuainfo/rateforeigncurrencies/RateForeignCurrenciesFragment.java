@@ -20,12 +20,12 @@ import com.gturedi.views.StatefulLayout;
 import com.socks.library.KLog;
 import com.yamschikov.dima.nationalbankuainfo.BaseFragment;
 import com.yamschikov.dima.nationalbankuainfo.R;
+import com.yamschikov.dima.nationalbankuainfo.SharedPreferencesStorage;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindString;
@@ -48,6 +48,8 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
     private RateForeignCurrenciesAdapter rateForeignCurrenciesAdapter;
 
     List<RateForeignCurrencies> rateForeignCurrenciesList = new ArrayList<>();
+
+    SharedPreferencesStorage sharedPreferencesStorage;
 
     public RateForeignCurrenciesFragment() {
         // Required empty public constructor
@@ -77,6 +79,13 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
         setHasOptionsMenu(true);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        SharedPreferencesStorage sharedPreferencesStorage = new SharedPreferencesStorage();
+        sharedPreferencesStorage.saveIndexSort(getActivity(), 4);
+    }
+
     private void subscribeToModel() {
 
         KLog.e("CoursesCurrenciesFragment", "");
@@ -92,8 +101,10 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
                 if (rateForeignCurrencies != null && rateForeignCurrencies.size() != 0) {
 
                     rateForeignCurrenciesList = rateForeignCurrencies;
+                    SharedPreferencesStorage sharedPreferencesStorage = new SharedPreferencesStorage();
+                    sharedPreferencesStorage.saveCurrenciesRate(getActivity(), rateForeignCurrenciesList);
 
-                    rateForeignCurrenciesAdapter = new RateForeignCurrenciesAdapter(rateForeignCurrencies);
+                    rateForeignCurrenciesAdapter = new RateForeignCurrenciesAdapter(getActivity(), rateForeignCurrencies);
                     RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
                     mRecyclerView.setItemAnimator(new DefaultItemAnimator());
                     mRecyclerView.setLayoutManager(mLayoutManager);
@@ -126,6 +137,7 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
                 return true;
 
             case R.id.action_date:
+                //rateForeignCurrenciesList.clear();
                 KLog.e("onOptionsItemSelected action_date:", "");
                 getDate();
                 return true;
@@ -166,14 +178,21 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
         switch (index) {
 
             case 0:
+                sharedPreferencesStorage = new SharedPreferencesStorage();
+                sharedPreferencesStorage.saveCurrenciesRateSort(getActivity(), rateForeignCurrenciesList, 0);
+                sharedPreferencesStorage.saveIndexSort(getActivity(), 0);
                 Collections.sort(rateForeignCurrenciesList, new Comparator<RateForeignCurrencies>() {
                     @Override
                     public int compare(RateForeignCurrencies value1, RateForeignCurrencies value2) {
                         return value1.getCc().compareTo(value2.getCc());
                     }
                 });
+                KLog.e("Collections.sort:", "" + rateForeignCurrenciesList.get(0).getRate());
                 break;
             case 1:
+                sharedPreferencesStorage = new SharedPreferencesStorage();
+                sharedPreferencesStorage.saveCurrenciesRateSort(getActivity(), rateForeignCurrenciesList, 1);
+                sharedPreferencesStorage.saveIndexSort(getActivity(), 1);
                 Collections.sort(rateForeignCurrenciesList, new Comparator<RateForeignCurrencies>() {
                     @Override
                     public int compare(RateForeignCurrencies value1, RateForeignCurrencies value2) {
@@ -182,6 +201,9 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
                 });
                 break;
             case 2:
+                sharedPreferencesStorage = new SharedPreferencesStorage();
+                sharedPreferencesStorage.saveCurrenciesRateSort(getActivity(), rateForeignCurrenciesList, 2);
+                sharedPreferencesStorage.saveIndexSort(getActivity(), 2);
                 Collections.sort(rateForeignCurrenciesList, new Comparator<RateForeignCurrencies>() {
                     @Override
                     public int compare(RateForeignCurrencies value1, RateForeignCurrencies value2) {
@@ -216,9 +238,18 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
         String dateParam = year + selectedDateM + selectedDateD;
         KLog.e("date------->", "" + dateParam);
 
-        ///
 
-        setOnDateSetObserver(dateParam);
+        Calendar cal = Calendar.getInstance();
+        int currentDate = cal.get(Calendar.MONTH) + 1;
+
+        int currentYear = cal.get(Calendar.YEAR);
+        KLog.e("curr month---------------------------------->", "month" + month + " " + "cur" + currentDate
+                + " " + "year" + year + " " + "curYEAR" + currentYear);
+
+        if (month == currentDate && year == currentYear) {
+
+            setOnDateSetObserver(dateParam);
+        } else mStateFulView.showEmpty();
     }
 
     private void setOnDateSetObserver(String dateParam) {
@@ -234,7 +265,7 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
 
                     rateForeignCurrenciesList = rateForeignCurrenciesD;
 
-                    rateForeignCurrenciesAdapter = new RateForeignCurrenciesAdapter(rateForeignCurrenciesList);
+                    rateForeignCurrenciesAdapter = new RateForeignCurrenciesAdapter(getActivity(), rateForeignCurrenciesList);
                     mRecyclerView.setAdapter(rateForeignCurrenciesAdapter);
                     mStateFulView.showContent();
                     rateForeignCurrenciesAdapter.notifyDataSetChanged();
