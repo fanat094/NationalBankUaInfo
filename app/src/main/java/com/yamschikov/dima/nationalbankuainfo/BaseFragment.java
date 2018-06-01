@@ -33,14 +33,14 @@ public abstract class BaseFragment extends Fragment {
         return mBaseView;
     }
 
-    @Override
+    /*@Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.mBaseView = view;
 
         KLog.e("BaseFragment", "");
 
-    }
+    }*/
 
     public void onResume() {
         super.onResume();

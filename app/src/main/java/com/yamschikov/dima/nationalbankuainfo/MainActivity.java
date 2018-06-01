@@ -2,6 +2,7 @@ package com.yamschikov.dima.nationalbankuainfo;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -10,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.socks.library.KLog;
 import com.yamschikov.dima.nationalbankuainfo.rateforeigncurrencies.RateForeignCurrenciesFragment;
 
 import butterknife.BindView;
@@ -32,6 +34,8 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        KLog.e("savedInstanceState", "Status:" + savedInstanceState);
+
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
 
@@ -42,9 +46,8 @@ public class MainActivity extends AppCompatActivity
 
         mNavigationView.setNavigationItemSelectedListener(this);
         mBaseFragmentManager = new BaseFragmentManager();
-        setContent(new RateForeignCurrenciesFragment(), false);
+        //setContent(new RateForeignCurrenciesFragment(), true);
     }
-
 
     @Override
     public void onBackPressed() {
@@ -61,7 +64,6 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }*/
-
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

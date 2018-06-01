@@ -15,9 +15,9 @@ public class CustomDatePickerFragment extends DialogFragment implements DatePick
     OnDateSetListener mDateSetListener;
     DatePicker view;
 
-    int yy ;
-    int mm ;
-    int dd ;
+    int yy;
+    int mm;
+    int dd;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

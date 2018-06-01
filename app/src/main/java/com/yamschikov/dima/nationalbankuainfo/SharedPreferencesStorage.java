@@ -30,7 +30,7 @@ public class SharedPreferencesStorage {
         prefsEditor = sPreferences.edit();
         prefsEditor.putInt(INDEX_SORT, index_sort);
         prefsEditor.commit();
-        KLog.e("SAVE_PREF_RATE", "done!");
+        KLog.e("SAVE_PREF_RATE", "done!" + " " + index_sort);
 
     }
 

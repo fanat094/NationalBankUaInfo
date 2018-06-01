@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.socks.library.KLog;
+import com.yamschikov.dima.nationalbankuainfo.BankSort;
 import com.yamschikov.dima.nationalbankuainfo.R;
 import com.yamschikov.dima.nationalbankuainfo.SharedPreferencesStorage;
 
@@ -50,7 +51,6 @@ public class RateForeignCurrenciesAdapter extends RecyclerView.Adapter<RateForei
     @Override
     public void onBindViewHolder(@NonNull RateForeignCurrenciesHolder holder, int position) {
 
-
         SharedPreferencesStorage sharedPreferencesStorage = new SharedPreferencesStorage();
         rateForeignCurrenciesListOld = sharedPreferencesStorage.getCurrenciesRate(context);
 
@@ -59,35 +59,18 @@ public class RateForeignCurrenciesAdapter extends RecyclerView.Adapter<RateForei
         switch (isort) {
 
             case 0:
-                Collections.sort(rateForeignCurrenciesList, new Comparator<RateForeignCurrencies>() {
-                    @Override
-                    public int compare(RateForeignCurrencies value1, RateForeignCurrencies value2) {
-                        return value1.getCc().compareTo(value2.getCc());
-                    }
-                });
+                Collections.sort(rateForeignCurrenciesList, BankSort.getAttributeABCComparator());
                 break;
-
             case 1:
-                Collections.sort(rateForeignCurrenciesList, new Comparator<RateForeignCurrencies>() {
-                    @Override
-                    public int compare(RateForeignCurrencies value1, RateForeignCurrencies value2) {
-                        return value1.getRate().compareTo(value2.getRate());
-                    }
-                });
+                Collections.sort(rateForeignCurrenciesList, BankSort.getAttributeDownToUpRateComparator());
                 break;
             case 2:
-                Collections.sort(rateForeignCurrenciesList, new Comparator<RateForeignCurrencies>() {
-                    @Override
-                    public int compare(RateForeignCurrencies value1, RateForeignCurrencies value2) {
-                        return value2.getRate().compareTo(value1.getRate());
-                    }
-                });
+                Collections.sort(rateForeignCurrenciesList, BankSort.getAttributeUpToDownRateComparator());
                 break;
 
         }
 
         RateForeignCurrencies rateForeignCurrencies = rateForeignCurrenciesList.get(position);
-
         RateForeignCurrencies rateForeignCurrenciesOld = rateForeignCurrenciesListOld.get(position);
 
         holder.mNameCcCurrency.setText(rateForeignCurrencies.getCc());
@@ -108,13 +91,13 @@ public class RateForeignCurrenciesAdapter extends RecyclerView.Adapter<RateForei
         //double res2 = (res*100)/rateForeignCurrenciesOld.getRate();
 
         holder.mdifferenceCurrency.setText(percentValue(rateForeignCurrencies, rateForeignCurrenciesOld));
-        double resminus = rateForeignCurrenciesOld.getRate() - rateForeignCurrencies.getRate();
+        double resminus = rateForeignCurrencies.getRate() - rateForeignCurrenciesOld.getRate();
+        KLog.e("resminus1----->", "" + resminus);
         if (resminus < 0) {
 
             holder.mdifferenceCurrency.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
         } else
             holder.mdifferenceCurrency.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
-
 
         KLog.e("rateForeignCurrencies.getRate()--->", "" + rateForeignCurrencies.getRate());
         KLog.e("rateForeignCurrencies/From Shared)--->", "" + rateForeignCurrenciesOld.getRate());
@@ -123,13 +106,13 @@ public class RateForeignCurrenciesAdapter extends RecyclerView.Adapter<RateForei
 
     public String percentValue(RateForeignCurrencies rateForeignCurrencies, RateForeignCurrencies rateForeignCurrenciesOld) {
 
-
         double res;
         String pattern;
         DecimalFormat decimalFormat;
         String format;
 
         double minus = rateForeignCurrencies.getRate() - rateForeignCurrenciesOld.getRate();
+        KLog.e("resminus2----->", "" + minus);
 
         if (minus > 0) {
 
@@ -143,6 +126,8 @@ public class RateForeignCurrenciesAdapter extends RecyclerView.Adapter<RateForei
         pattern = "##0.00";
         decimalFormat = new DecimalFormat(pattern);
         format = decimalFormat.format(res);
+
+        KLog.e("format----->", format);
 
 
         return format + "%";

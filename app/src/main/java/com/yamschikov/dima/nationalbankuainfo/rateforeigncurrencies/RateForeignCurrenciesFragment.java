@@ -18,6 +18,7 @@ import android.view.View;
 
 import com.gturedi.views.StatefulLayout;
 import com.socks.library.KLog;
+import com.yamschikov.dima.nationalbankuainfo.BankSort;
 import com.yamschikov.dima.nationalbankuainfo.BaseFragment;
 import com.yamschikov.dima.nationalbankuainfo.R;
 import com.yamschikov.dima.nationalbankuainfo.SharedPreferencesStorage;
@@ -75,8 +76,22 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        subscribeToModel();
-        setHasOptionsMenu(true);
+        //if (savedInstanceState == null) {
+
+            model = ViewModelProviders.of(this).get(RateForeignCurrenciesViewModel.class);
+            data = model.getData();
+            KLog.e("DataNull0", "" + model.getData().getValue());
+
+            /*KLog.e("onViewCreated_savedInstanceState", savedInstanceState);*/
+
+
+                subscribeToModel();
+               /* KLog.e("onViewCreated_subscribeToModel()", model.getData().getValue());
+
+            } else mStateFulView.showEmpty();
+            KLog.e("onViewCreated_subscribeToModel() - else", "1");*/
+            setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -91,9 +106,6 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
         KLog.e("CoursesCurrenciesFragment", "");
         mStateFulView.showLoading();
 
-        model = ViewModelProviders.of(this).get(RateForeignCurrenciesViewModel.class);
-        data = model.getData();
-
         data.observe(this, new Observer<List<RateForeignCurrencies>>() {
             @Override
             public void onChanged(@Nullable List<RateForeignCurrencies> rateForeignCurrencies) {
@@ -104,7 +116,7 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
                     SharedPreferencesStorage sharedPreferencesStorage = new SharedPreferencesStorage();
                     sharedPreferencesStorage.saveCurrenciesRate(getActivity(), rateForeignCurrenciesList);
 
-                    rateForeignCurrenciesAdapter = new RateForeignCurrenciesAdapter(getActivity(), rateForeignCurrencies);
+                    rateForeignCurrenciesAdapter = new RateForeignCurrenciesAdapter(getActivity(), rateForeignCurrenciesList);
                     RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
                     mRecyclerView.setItemAnimator(new DefaultItemAnimator());
                     mRecyclerView.setLayoutManager(mLayoutManager);
@@ -117,6 +129,7 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
                 } else mStateFulView.showEmpty();
             }
         });
+
 
     }
 
@@ -137,7 +150,6 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
                 return true;
 
             case R.id.action_date:
-                //rateForeignCurrenciesList.clear();
                 KLog.e("onOptionsItemSelected action_date:", "");
                 getDate();
                 return true;
@@ -181,35 +193,34 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
                 sharedPreferencesStorage = new SharedPreferencesStorage();
                 sharedPreferencesStorage.saveCurrenciesRateSort(getActivity(), rateForeignCurrenciesList, 0);
                 sharedPreferencesStorage.saveIndexSort(getActivity(), 0);
-                Collections.sort(rateForeignCurrenciesList, new Comparator<RateForeignCurrencies>() {
+
+                model = ViewModelProviders.of(this).get(RateForeignCurrenciesViewModel.class);
+                data =  model.getDataEx(0, rateForeignCurrenciesList);
+
+                data.observe(this, new Observer<List<RateForeignCurrencies>>() {
                     @Override
-                    public int compare(RateForeignCurrencies value1, RateForeignCurrencies value2) {
-                        return value1.getCc().compareTo(value2.getCc());
+                    public void onChanged(@Nullable List<RateForeignCurrencies> rateForeignCurrenciesList) {
+                        rateForeignCurrenciesAdapter.notifyDataSetChanged();
                     }
                 });
-                KLog.e("Collections.sort:", "" + rateForeignCurrenciesList.get(0).getRate());
+
+
+
+                //Collections.sort(rateForeignCurrenciesList, BankSort.getAttributeABCComparator());
                 break;
             case 1:
                 sharedPreferencesStorage = new SharedPreferencesStorage();
                 sharedPreferencesStorage.saveCurrenciesRateSort(getActivity(), rateForeignCurrenciesList, 1);
                 sharedPreferencesStorage.saveIndexSort(getActivity(), 1);
-                Collections.sort(rateForeignCurrenciesList, new Comparator<RateForeignCurrencies>() {
-                    @Override
-                    public int compare(RateForeignCurrencies value1, RateForeignCurrencies value2) {
-                        return value1.getRate().compareTo(value2.getRate());
-                    }
-                });
+
+                Collections.sort(rateForeignCurrenciesList, BankSort.getAttributeDownToUpRateComparator());
                 break;
             case 2:
                 sharedPreferencesStorage = new SharedPreferencesStorage();
                 sharedPreferencesStorage.saveCurrenciesRateSort(getActivity(), rateForeignCurrenciesList, 2);
                 sharedPreferencesStorage.saveIndexSort(getActivity(), 2);
-                Collections.sort(rateForeignCurrenciesList, new Comparator<RateForeignCurrencies>() {
-                    @Override
-                    public int compare(RateForeignCurrencies value1, RateForeignCurrencies value2) {
-                        return value2.getRate().compareTo(value1.getRate());
-                    }
-                });
+
+                Collections.sort(rateForeignCurrenciesList, BankSort.getAttributeUpToDownRateComparator());
                 break;
         }
 
