@@ -21,6 +21,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RateForeignCurrenciesViewModel extends ViewModel {
+    //
 
     @Inject
     WebService webService;
@@ -31,6 +32,7 @@ public class RateForeignCurrenciesViewModel extends ViewModel {
         BaseApplication.getAppComponent().inject(this);
     }
 
+    //first
     public LiveData<List<RateForeignCurrencies>> getData() {
         if (data == null) {
             data = new MutableLiveData<>();
@@ -62,6 +64,9 @@ public class RateForeignCurrenciesViewModel extends ViewModel {
 
     }
 
+    //
+
+    //date
     MutableLiveData<List<RateForeignCurrencies>> dataDate;
 
     public LiveData<List<RateForeignCurrencies>> getDataDate(String datadateparamtoload) {
@@ -96,7 +101,7 @@ public class RateForeignCurrenciesViewModel extends ViewModel {
 
     }
 
-    //ex
+    //ex sort
 
     public LiveData<List<RateForeignCurrencies>> getDataEx(int index, List<RateForeignCurrencies> rateForeignCurrenciesList) {
         if (data == null) {
@@ -126,6 +131,4 @@ public class RateForeignCurrenciesViewModel extends ViewModel {
         }
 
     }
-
-
 }

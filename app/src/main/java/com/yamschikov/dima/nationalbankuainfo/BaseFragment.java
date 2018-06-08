@@ -45,7 +45,7 @@ public abstract class BaseFragment extends Fragment {
     public void onResume() {
         super.onResume();
         setToolbarTitle(getToolbarTitle());
-        setCheckedItemId(getNavigationItemId());
+       // setCheckedItemId(getNavigationItemId());
     }
 
     public MainActivity getMainActivity() {
@@ -65,9 +65,9 @@ public abstract class BaseFragment extends Fragment {
         unbinder.unbind();
     }
 
-    private void setCheckedItemId(@IdRes int id) {
+    /*private void setCheckedItemId(@IdRes int id) {
         getMainActivity().setCheckedItem(id);
-    }
+    }*/
 
     public void onScreen() {
         setToolbarTitle(getToolbarTitle());

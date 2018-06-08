@@ -38,12 +38,16 @@ public class RateForeignCurrenciesAdapter extends RecyclerView.Adapter<RateForei
         this.context = context;
     }
 
+    public void setItems(List<RateForeignCurrencies> items) {
+        this.rateForeignCurrenciesList = items;
+    }
+
     @NonNull
     @Override
     public RateForeignCurrenciesHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.test_rate_foreign_currencies_item, parent, false);
+                .inflate(R.layout.rate_foreign_currencies_item, parent, false);
 
         return new RateForeignCurrenciesHolder(itemView);
     }
@@ -76,7 +80,7 @@ public class RateForeignCurrenciesAdapter extends RecyclerView.Adapter<RateForei
         holder.mNameCcCurrency.setText(rateForeignCurrencies.getCc());
         holder.mNameCurrency.setText(rateForeignCurrencies.getTxt());
 
-        String pattern = "##0.00000";
+        String pattern = "##0.000";
         DecimalFormat decimalFormat = new DecimalFormat(pattern);
         String formatRate = decimalFormat.format(rateForeignCurrencies.getRate());
 
@@ -90,7 +94,7 @@ public class RateForeignCurrenciesAdapter extends RecyclerView.Adapter<RateForei
 
         //double res2 = (res*100)/rateForeignCurrenciesOld.getRate();
 
-        holder.mdifferenceCurrency.setText(percentValue(rateForeignCurrencies, rateForeignCurrenciesOld));
+       /* holder.mdifferenceCurrency.setText(percentValue(rateForeignCurrencies, rateForeignCurrenciesOld));
         double resminus = rateForeignCurrencies.getRate() - rateForeignCurrenciesOld.getRate();
         KLog.e("resminus1----->", "" + resminus);
         if (resminus < 0) {
@@ -100,11 +104,11 @@ public class RateForeignCurrenciesAdapter extends RecyclerView.Adapter<RateForei
             holder.mdifferenceCurrency.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
 
         KLog.e("rateForeignCurrencies.getRate()--->", "" + rateForeignCurrencies.getRate());
-        KLog.e("rateForeignCurrencies/From Shared)--->", "" + rateForeignCurrenciesOld.getRate());
+        KLog.e("rateForeignCurrencies/From Shared)--->", "" + rateForeignCurrenciesOld.getRate());*/
         //KLog.e("RESSSSSS", res);
     }
 
-    public String percentValue(RateForeignCurrencies rateForeignCurrencies, RateForeignCurrencies rateForeignCurrenciesOld) {
+    /*public String percentValue(RateForeignCurrencies rateForeignCurrencies, RateForeignCurrencies rateForeignCurrenciesOld) {
 
         double res;
         String pattern;
@@ -131,7 +135,7 @@ public class RateForeignCurrenciesAdapter extends RecyclerView.Adapter<RateForei
 
 
         return format + "%";
-    }
+    }*/
 
     @Override
     public int getItemCount() {
@@ -150,8 +154,8 @@ public class RateForeignCurrenciesAdapter extends RecyclerView.Adapter<RateForei
         TextView mDateCurrency;
         @BindView(R.id.image_view_currency)
         ImageView mImageViewCurrency;
-        @BindView(R.id.difference_currency)
-        TextView mdifferenceCurrency;
+        /*@BindView(R.id.difference_currency)
+        TextView mdifferenceCurrency;*/
 
 
         public RateForeignCurrenciesHolder(View itemView) {
@@ -160,5 +164,6 @@ public class RateForeignCurrenciesAdapter extends RecyclerView.Adapter<RateForei
             ButterKnife.bind(this, itemView);
 
         }
+
     }
 }

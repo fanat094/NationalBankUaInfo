@@ -23,16 +23,21 @@ import com.yamschikov.dima.nationalbankuainfo.BaseFragment;
 import com.yamschikov.dima.nationalbankuainfo.R;
 import com.yamschikov.dima.nationalbankuainfo.SharedPreferencesStorage;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindString;
 import butterknife.BindView;
 
 import android.widget.DatePicker;
+
+import javax.inject.Inject;
 
 public class RateForeignCurrenciesFragment extends BaseFragment implements CustomDatePickerFragment.OnDateSetListener {
 
@@ -43,7 +48,6 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
     @BindView(R.id.stateful_view)
     StatefulLayout mStateFulView;
     LiveData<List<RateForeignCurrencies>> data;
-    LiveData<List<RateForeignCurrencies>> dataDate;
     RateForeignCurrenciesViewModel model;
 
     private RateForeignCurrenciesAdapter rateForeignCurrenciesAdapter;
@@ -78,27 +82,19 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
 
         //if (savedInstanceState == null) {
 
-            model = ViewModelProviders.of(this).get(RateForeignCurrenciesViewModel.class);
-            data = model.getData();
-            KLog.e("DataNull0", "" + model.getData().getValue());
+        model = ViewModelProviders.of(this).get(RateForeignCurrenciesViewModel.class);
+        data = model.getData();
+        KLog.e("DataNull0", "" + model.getData().getValue());
 
-            /*KLog.e("onViewCreated_savedInstanceState", savedInstanceState);*/
+        subscribeToModel();
+
+        setHasOptionsMenu(true);
 
 
-                subscribeToModel();
-               /* KLog.e("onViewCreated_subscribeToModel()", model.getData().getValue());
-
-            } else mStateFulView.showEmpty();
-            KLog.e("onViewCreated_subscribeToModel() - else", "1");*/
-            setHasOptionsMenu(true);
-
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        SharedPreferencesStorage sharedPreferencesStorage = new SharedPreferencesStorage();
-        sharedPreferencesStorage.saveIndexSort(getActivity(), 4);
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat mdformat = new SimpleDateFormat("yyyyMM/dd");
+        String strDate = "Current Date : " + mdformat.format(calendar.getTime());
+        KLog.e("currs", strDate);
     }
 
     private void subscribeToModel() {
@@ -124,42 +120,14 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
                     mRecyclerView.addItemDecoration(decor);
                     mRecyclerView.setAdapter(rateForeignCurrenciesAdapter);
                     mStateFulView.showContent();
-                    rateForeignCurrenciesAdapter.notifyDataSetChanged();
+                    //rateForeignCurrenciesAdapter.notifyDataSetChanged();
 
                 } else mStateFulView.showEmpty();
             }
         });
-
-
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.main, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-
-            case R.id.action_filter:
-                KLog.e("onOptionsItemSelected", "");
-                menuFilter();
-                return true;
-
-            case R.id.action_date:
-                KLog.e("onOptionsItemSelected action_date:", "");
-                getDate();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     public void menuFilter() {
-
 
         String[] filter_items = getResources().getStringArray(R.array.filter_items);
 
@@ -194,8 +162,7 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
                 sharedPreferencesStorage.saveCurrenciesRateSort(getActivity(), rateForeignCurrenciesList, 0);
                 sharedPreferencesStorage.saveIndexSort(getActivity(), 0);
 
-                model = ViewModelProviders.of(this).get(RateForeignCurrenciesViewModel.class);
-                data =  model.getDataEx(0, rateForeignCurrenciesList);
+                data = model.getDataEx(0, rateForeignCurrenciesList);
 
                 data.observe(this, new Observer<List<RateForeignCurrencies>>() {
                     @Override
@@ -204,29 +171,43 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
                     }
                 });
 
-
-
-                //Collections.sort(rateForeignCurrenciesList, BankSort.getAttributeABCComparator());
                 break;
             case 1:
                 sharedPreferencesStorage = new SharedPreferencesStorage();
                 sharedPreferencesStorage.saveCurrenciesRateSort(getActivity(), rateForeignCurrenciesList, 1);
                 sharedPreferencesStorage.saveIndexSort(getActivity(), 1);
 
-                Collections.sort(rateForeignCurrenciesList, BankSort.getAttributeDownToUpRateComparator());
+                data = model.getDataEx(1, rateForeignCurrenciesList);
+
+                data.observe(this, new Observer<List<RateForeignCurrencies>>() {
+                    @Override
+                    public void onChanged(@Nullable List<RateForeignCurrencies> rateForeignCurrenciesList) {
+                        rateForeignCurrenciesAdapter.notifyDataSetChanged();
+                    }
+                });
+
                 break;
             case 2:
                 sharedPreferencesStorage = new SharedPreferencesStorage();
                 sharedPreferencesStorage.saveCurrenciesRateSort(getActivity(), rateForeignCurrenciesList, 2);
                 sharedPreferencesStorage.saveIndexSort(getActivity(), 2);
 
-                Collections.sort(rateForeignCurrenciesList, BankSort.getAttributeUpToDownRateComparator());
+                data = model.getDataEx(2, rateForeignCurrenciesList);
+
+                data.observe(this, new Observer<List<RateForeignCurrencies>>() {
+                    @Override
+                    public void onChanged(@Nullable List<RateForeignCurrencies> rateForeignCurrenciesList) {
+                        rateForeignCurrenciesAdapter.notifyDataSetChanged();
+                    }
+                });
                 break;
         }
 
         rateForeignCurrenciesAdapter.notifyDataSetChanged();
     }
 
+
+    //Alert
     private void getDate() {
 
         CustomDatePickerFragment customDatePickerFragment = new CustomDatePickerFragment();
@@ -234,6 +215,7 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
         customDatePickerFragment.setOnDateSetListener(this);
     }
 
+    //Alert
     @Override
     public void onDateSet(DatePicker viewDatePicker, int year, int monthOfYear, int dayOfMonth) {
 
@@ -259,13 +241,16 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
 
         if (month == currentDate && year == currentYear) {
 
+            //Request
             setOnDateSetObserver(dateParam);
         } else mStateFulView.showEmpty();
     }
 
     private void setOnDateSetObserver(String dateParam) {
 
-        model = ViewModelProviders.of(this).get(RateForeignCurrenciesViewModel.class);
+        KLog.e("setOnDateSetObserver", "True");
+
+       // model = ViewModelProviders.of(this).get(RateForeignCurrenciesViewModel.class);
         data = model.getDataDate(dateParam);
 
         data.observe(this, new Observer<List<RateForeignCurrencies>>() {
@@ -276,12 +261,46 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
 
                     rateForeignCurrenciesList = rateForeignCurrenciesD;
 
-                    rateForeignCurrenciesAdapter = new RateForeignCurrenciesAdapter(getActivity(), rateForeignCurrenciesList);
-                    mRecyclerView.setAdapter(rateForeignCurrenciesAdapter);
+                    KLog.e("Sereda", rateForeignCurrenciesList.get(11).getExchangedate(),
+                            rateForeignCurrenciesList.get(11).getTxt());
+
                     mStateFulView.showContent();
+                    rateForeignCurrenciesAdapter.setItems(rateForeignCurrenciesList);
                     rateForeignCurrenciesAdapter.notifyDataSetChanged();
                 } else mStateFulView.showEmpty();
             }
         });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.action_filter:
+                KLog.e("onOptionsItemSelected", "");
+                menuFilter();
+                return true;
+
+            case R.id.action_date:
+                KLog.e("onOptionsItemSelected action_date:", "");
+                getDate();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        SharedPreferencesStorage sharedPreferencesStorage = new SharedPreferencesStorage();
+        sharedPreferencesStorage.saveIndexSort(getActivity(), 4);
     }
 }
