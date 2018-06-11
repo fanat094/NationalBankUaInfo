@@ -1,9 +1,8 @@
 package com.yamschikov.dima.nationalbankuainfo.convertercurrencies;
 
-
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,9 +23,6 @@ import java.util.List;
 import butterknife.BindString;
 import butterknife.BindView;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class ConverterCurrenciesFragment extends BaseFragment {
 
     @BindString(R.string.toolbar_title_converter_currencies_fragment)
@@ -41,6 +37,7 @@ public class ConverterCurrenciesFragment extends BaseFragment {
     TextView mTvEndCurrency;
 
     List<RateForeignCurrencies> rateForeignCurrenciesListSafe;
+    SharedPreferencesStorage sharedPreferencesStorage;
 
     public ConverterCurrenciesFragment() {
         // Required empty public constructor
@@ -65,6 +62,7 @@ public class ConverterCurrenciesFragment extends BaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mEditIn.addTextChangedListener(watch);
+        //mTvToCurrency.setEnabled(false);
 
         mTvToCurrency.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,11 +91,16 @@ public class ConverterCurrenciesFragment extends BaseFragment {
         public void onTextChanged(CharSequence s, int a, int b, int c) {
             // TODO Auto-generated method stub
 
-            int number = Integer.parseInt(s.toString());
-            /*number *= 26;
+            if (mEditIn.getText().toString().equals("")) {
 
-            mEditOut.setText(String.valueOf(number));*/
-            ddddd(number);
+                KLog.e("karaul", "karaul");
+                mEditOut.setText("");
+                mTvToCurrency.setEnabled(false);
+            } else {
+                mTvToCurrency.setEnabled(true);
+                int number = Integer.parseInt(s.toString());
+                setNumber(number);
+            }
             if (a == 9) {
                 Toast.makeText(getActivity(), "Maximum Limit Reached", Toast.LENGTH_SHORT).show();
             }
@@ -106,7 +109,7 @@ public class ConverterCurrenciesFragment extends BaseFragment {
 
     public void menuFilter() {
 
-        SharedPreferencesStorage sharedPreferencesStorage = new SharedPreferencesStorage();
+        sharedPreferencesStorage = new SharedPreferencesStorage();
         rateForeignCurrenciesListSafe = sharedPreferencesStorage.getCurrenciesRate(getActivity());
         getListCurrencies(rateForeignCurrenciesListSafe);
 
@@ -121,19 +124,21 @@ public class ConverterCurrenciesFragment extends BaseFragment {
                         KLog.e("selectedPosition----->", selectedPosition);
                         mTvToCurrency.setText(rateForeignCurrenciesListSafe.get(selectedPosition).getCc());
 
-                        String f = String.valueOf(mEditIn.getText());
-                        int foo = Integer.parseInt(f);
+                        double valueFromEditIn = Double.parseDouble(String.valueOf(mEditIn.getText()));
 
-                        foo*=rateForeignCurrenciesListSafe.get(selectedPosition).getRate();
-                        String res = String.valueOf(foo);
+                        valueFromEditIn *= rateForeignCurrenciesListSafe.get(selectedPosition).getRate();
+                        String resValueFromEditIn = String.valueOf(valueFromEditIn);
 
+                        SharedPreferencesStorage sharedPreferences = new SharedPreferencesStorage();
+                        String saveValueRate = String.valueOf(rateForeignCurrenciesListSafe.get(selectedPosition).getRate());
+                        sharedPreferences.saveIndexConvert(getActivity(), saveValueRate);
 
-                        mEditOut.setText(res);
-                        /*switch (selectedPosition) {
-                            case 0:
-                                //listSortAll(0);
-                                break;
-                        }*/
+                        String saveValueRateSelect = String.valueOf(rateForeignCurrenciesListSafe.get(selectedPosition).getCc());
+                        sharedPreferences.saveIndexConvertSelect(getActivity(), saveValueRateSelect);
+
+                        KLog.e("REST--->", saveValueRateSelect);
+
+                        mEditOut.setText(resValueFromEditIn);
                     }
                 })
                 .show();
@@ -154,11 +159,23 @@ public class ConverterCurrenciesFragment extends BaseFragment {
         return currenciesStringList;
     }
 
-    private void ddddd(int gggggg) {
+    private void setNumber(double intnumber) {
 
-        gggggg *= 26;
+        sharedPreferencesStorage = new SharedPreferencesStorage();
+        double indexConvert = sharedPreferencesStorage.getIndexConvert(getActivity());
+        String indexConvertSelect = sharedPreferencesStorage.getIndexConvertSelect(getActivity());
+        mTvToCurrency.setText(indexConvertSelect);
+        KLog.e("getIndexConvert", indexConvertSelect);
+        intnumber *= indexConvert;
 
-        KLog.e("dddddddddddddddddddddd", mTvToCurrency.getText());
-        mEditOut.setText(String.valueOf(gggggg));
+        KLog.e("dddddddddddddddddddddd", intnumber);
+        mEditOut.setText(String.valueOf(intnumber));
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        //String saveValueRate = String.valueOf(rateForeignCurrenciesListSafe.get(33).getRate());
+        //sharedPreferencesStorage.saveIndexConvert(getActivity(), saveValueRate);
     }
 }

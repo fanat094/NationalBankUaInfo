@@ -90,7 +90,6 @@ public class RateForeignCurrenciesFragment extends BaseFragment implements Custo
 
         setHasOptionsMenu(true);
 
-
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat mdformat = new SimpleDateFormat("yyyyMM/dd");
         String strDate = "Current Date : " + mdformat.format(calendar.getTime());
